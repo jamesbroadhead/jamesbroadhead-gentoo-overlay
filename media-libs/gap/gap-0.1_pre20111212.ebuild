@@ -10,9 +10,12 @@ DESCRIPTION="Gapless Audio Player Library for Goggles Musicmanager (media-sound/
 HOMEPAGE="http://code.google.com/p/gogglesmm/"
 EHG_REPO_URI="https://${PN}.gogglesmm.googlecode.com/hg/"
 
+# Tested with media-sound/gogglesmm-0.12.6
+EHG_REVISION="c6ba5fce528a"
+
 LICENSE="GPL-3"
 SLOT="0"
-KEYWORDS=""
+KEYWORDS="~amd64 ~x86"
 IUSE="aac alsa cdda ffmpeg flac jack mad mms musepack ogg pulseaudio samba libsamplerate vorbis"
 
 DEPEND=">=x11-libs/fox-1.7.30
