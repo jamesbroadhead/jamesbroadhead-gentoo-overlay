@@ -15,8 +15,7 @@ EHG_REVISION="c6ba5fce528a"
 
 LICENSE="GPL-3"
 SLOT="0"
-# Waiting for fox ...
-#KEYWORDS="~amd64 ~x86"
+KEYWORDS="~amd64 ~x86"
 IUSE="aac alsa cdda ffmpeg flac jack mad mms musepack ogg pulseaudio samba libsamplerate vorbis"
 
 DEPEND=">=x11-libs/fox-1.7.30
