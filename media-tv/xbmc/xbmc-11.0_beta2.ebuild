@@ -162,6 +162,8 @@ src_prepare() {
 	epatch ${FILESDIR}/xbmc-11.0_beta1-libpng-1.5.patch || die
 	epatch ${FILESDIR}/xbmc-11.0_beta1-libpng-1.5-fix-plt-trn-get.patch || die
 
+
+
 	epatch_user #293109
 	
 	# Tweak autotool timestamps to avoid regeneration
