@@ -156,13 +156,8 @@ src_prepare() {
 	sed -i \
 		-e '/dbus_connection_send_with_reply_and_block/s:-1:3000:' \
 		xbmc/linux/*.cpp || die
-
 	
-	epatch ${FILESDIR}/xbmc-11.0_beta1-libpng-1.5-headers.patch || die
-	epatch ${FILESDIR}/xbmc-11.0_beta1-libpng-1.5.patch || die
-	epatch ${FILESDIR}/xbmc-11.0_beta1-libpng-1.5-fix-plt-trn-get.patch || die
-
-
+	epatch ${FILESDIR}/xbmc-11.0_beta2-libpng1.5-zenkibou-github.patch || die
 
 	epatch_user #293109
 	
