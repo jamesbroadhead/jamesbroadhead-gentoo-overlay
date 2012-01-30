@@ -1,0 +1,96 @@
+http://trac.xbmc.org/attachment/ticket/11775
+
+make mysql support optional
+
+--- a/Makefile.in
++++ b/Makefile.in
+@@ -127,13 +127,17 @@ endif
+ LIB_DIRS=\
+ 	lib/cximage-6.0 \
+ 	lib/libexif \
+-	lib/cmyth \
+ 	lib/libhdhomerun \
+ 	lib/libid3tag \
+ 	lib/libapetag \
+ 	lib/cpluff \
+ 	lib/xbmc-dll-symbols
+ 
++ifeq (@BUILD_MYTHTV@,1)
++LIB_DIRS+=\
++	lib/cmyth
++endif
++
+ SS_DIRS=
+ ifeq (@USE_OPENGL@,1)
+ SS_DIRS+= xbmc/screensavers/rsxs-0.9/xbmc
+@@ -418,7 +422,10 @@ imagelib: dllloader
+ 	$(MAKE) -C lib/cximage-6.0
+ 
+ codecs: papcodecs dvdpcodecs
+-libs: cmyth libhdhomerun libid3tag imagelib libexif system/libcpluff-@ARCH@.so
++libs: libhdhomerun libid3tag imagelib libexif system/libcpluff-@ARCH@.so
++ifeq (@BUILD_MYTHTV@,1)
++libs: cmyth
++endif
+ externals: codecs libs visualizations screensavers
+ 
+ xcode_depends: \
+
+--- a/xbmc/dbwrappers/Database.cpp
++++ b/xbmc/dbwrappers/Database.cpp
+@@ -29,7 +29,9 @@
+ #include "utils/AutoPtrHandle.h"
+ #include "utils/log.h"
+ #include "utils/URIUtils.h"
++#ifdef BUILD_MYTHTV
+ #include "mysqldataset.h"
++#endif /* BUILD_MYTHTV */
+ #include "sqlitedataset.h"
+ 
+ 
+@@ -265,6 +267,7 @@ bool CDatabase::Open(const DatabaseSettings &settings)
+ 
+   m_sqlite = true;
+ 
++#ifdef BUILD_MYTHTV
+   if ( dbSettings.type.Equals("mysql") )
+   {
+     // check we have all information before we cancel the fallback
+@@ -274,6 +277,7 @@ bool CDatabase::Open(const DatabaseSettings &settings)
+     else
+       CLog::Log(LOGINFO, "essential mysql database information is missing (eg. host, name, user, pass)");
+   }
++#endif /* BUILD_MYTHTV */
+ 
+   // always safely fallback to sqlite3, and use separate, versioned database
+   if (m_sqlite)
+@@ -339,10 +343,12 @@ bool CDatabase::Connect(const DatabaseSettings &dbSettings, bool create)
+   {
+     m_pDB.reset( new SqliteDatabase() ) ;
+   }
++#ifdef BUILD_MYTHTV
+   else if (dbSettings.type.Equals("mysql"))
+   {
+     m_pDB.reset( new MysqlDatabase() ) ;
+   }
++#endif /* BUILD_MYTHTV */
+   else
+   {
+     CLog::Log(LOGERROR, "Unable to determine database type: %s", dbSettings.type.c_str());
+--- a/xbmc/dbwrappers/Makefile
++++ b/xbmc/dbwrappers/Makefile
+@@ -1,9 +1,13 @@
+ SRCS=Database.cpp \
+      dataset.cpp \
+-     mysqldataset.cpp \
+      qry_dat.cpp \
+      sqlitedataset.cpp \
+ 
++ifeq (@BUILD_MYTHTV@,1)
++SRCS+=\
++     mysqldataset.cpp
++endif
++
+ LIB=dbwrappers.a
+ 
+ include ../../Makefile.include
