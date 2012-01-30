@@ -1,6 +1,6 @@
-# Copyright 1999-2011 Gentoo Foundation
+# Copyright 1999-2012 Gentoo Foundation
 # Distributed under the terms of the GNU General Public License v2
-# $Header: /var/cvsroot/gentoo-x86/media-tv/xbmc/xbmc-9999.ebuild,v 1.94 2011/12/21 03:42:04 vapier Exp $
+# $Header: $
 
 EAPI="2"
 
@@ -10,12 +10,12 @@ EGIT_REPO_URI="git://github.com/xbmc/xbmc.git"
 if [[ ${PV} == "9999" ]] ; then
 	inherit git-2
 else
-	if [[ ${PV} == *beta* ]] ; then 
+	if [[ ${PV} == *beta* ]] ; then
 		inherit versionator
 		CODENAME="Eden"
 		MY_PV=`get_version_component_range 1-2`-${CODENAME}_`get_version_component_range 3`
 		MY_P="${PN}-${MY_PV}"
-	else 
+	else
 		MY_P=${P/_/-}
 	fi
 	SRC_URI="http://mirrors.xbmc.org/releases/source/${MY_P}.tar.gz"
@@ -28,10 +28,10 @@ HOMEPAGE="http://xbmc.org/"
 
 LICENSE="GPL-2"
 SLOT="0"
-IUSE="airplay alsa altivec avahi bluray css debug goom joystick midi profile +projectm pulseaudio +rsxs rtmp +samba sse sse2 udev vaapi vdpau webserver +xrandr"
+IUSE="airplay alsa altivec avahi bluray css debug goom joystick midi profile +projectm pulseaudio pvr +rsxs rtmp +samba sse sse2 udev vaapi vdpau webserver +xrandr"
 
-COMMON_DEPEND="
-	app-arch/bzip2
+# TODO: Verify that media-video/ffmpeg is correct (not virtual/ffmpeg)
+COMMON_DEPEND="app-arch/bzip2
 	app-arch/unzip
 	app-arch/zip
 	app-i18n/enca
@@ -66,9 +66,9 @@ COMMON_DEPEND="
 	media-libs/sdl-sound
 	media-libs/tiff
 	media-sound/wavpack
-	media-video/ffmpeg	
+	media-video/ffmpeg
 	net-misc/curl
-	=net-wireless/bluez-4.96	
+	=net-wireless/bluez-4.96
 	sys-apps/dbus
 	sys-libs/zlib
 	virtual/jpeg
@@ -85,6 +85,7 @@ COMMON_DEPEND="
 	css? ( media-libs/libdvdcss )
 	pulseaudio? ( media-sound/pulseaudio )
 	projectm? ( media-libs/libprojectm )
+	pvr? ( virtual/mysql )
 	rtmp? ( media-video/rtmpdump )
 	samba? ( >=net-fs/samba-3.4.6[smbclient] )
 	vaapi? ( x11-libs/libva )
@@ -98,9 +99,9 @@ COMMON_DEPEND="
 RDEPEND="${COMMON_DEPEND}
 	udev? (	sys-fs/udisks sys-power/upower )"
 DEPEND="${COMMON_DEPEND}
+	dev-util/cmake
 	dev-util/gperf
 	x11-proto/xineramaproto
-	dev-util/cmake
 	x86? ( dev-lang/nasm )"
 
 src_unpack() {
@@ -119,6 +120,13 @@ src_unpack() {
 }
 
 src_prepare() {
+	# TODO: Is patch needed for 11_b2? 
+	# 	Yes => Patch needs updating for 11_b2	
+	#epatch "${FILESDIR}"/${PN}-9999-nomysql.patch
+	epatch "${FILESDIR}"/${P}-nomysql.patch || die
+	epatch "${FILESDIR}"/configure.in.patch || die
+	epatch "${FILESDIR}"/xbmc-11.0_beta2-libpng1.5-zenkibou-github.patch || die
+
 	# some dirs ship generated autotools, some dont
 	local d
 	for d in \
@@ -156,11 +164,9 @@ src_prepare() {
 	sed -i \
 		-e '/dbus_connection_send_with_reply_and_block/s:-1:3000:' \
 		xbmc/linux/*.cpp || die
-	
-	epatch ${FILESDIR}/xbmc-11.0_beta2-libpng1.5-zenkibou-github.patch || die
 
 	epatch_user #293109
-	
+
 	# Tweak autotool timestamps to avoid regeneration
 	find . -type f -print0 | xargs -0 touch -r configure
 }
@@ -189,6 +195,7 @@ src_configure() {
 		$(use_enable profile profiling) \
 		$(use_enable projectm) \
 		$(use_enable pulseaudio pulse) \
+		$(use_enable pvr mythtv) \
 		$(use_enable rsxs) \
 		$(use_enable rtmp) \
 		$(use_enable samba) \
