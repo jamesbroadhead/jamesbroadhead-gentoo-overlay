@@ -124,8 +124,7 @@ src_prepare() {
 	# 	Yes => Patch needs updating for 11_b2	
 	#epatch "${FILESDIR}"/${PN}-9999-nomysql.patch
 	epatch "${FILESDIR}"/${P}-nomysql.patch || die
-	epatch "${FILESDIR}"/configure.in.patch || die
-	epatch "${FILESDIR}"/xbmc-11.0_beta2-libpng1.5-zenkibou-github.patch || die
+	epatch "${FILESDIR}"/${P}-libpng1.5-zenkibou-github.patch || die
 
 	# some dirs ship generated autotools, some dont
 	local d
