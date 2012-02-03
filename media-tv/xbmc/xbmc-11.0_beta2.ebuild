@@ -120,9 +120,6 @@ src_unpack() {
 }
 
 src_prepare() {
-	# TODO: Is patch needed for 11_b2? 
-	# 	Yes => Patch needs updating for 11_b2	
-	#epatch "${FILESDIR}"/${PN}-9999-nomysql.patch
 	epatch "${FILESDIR}"/${P}-nomysql.patch || die
 	epatch "${FILESDIR}"/${P}-libpng1.5-zenkibou-github.patch || die
 
