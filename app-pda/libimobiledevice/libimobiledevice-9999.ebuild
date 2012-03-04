@@ -49,6 +49,8 @@ src_prepare() {
 }
 
 src_configure() {
+	NOCONFIGURE="set" ./autogen.sh 		
+	
 	# --with-swig is same as --without-swig wrt #361029
 
 	local myconf
