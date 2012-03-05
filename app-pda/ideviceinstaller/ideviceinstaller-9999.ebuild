@@ -27,6 +27,6 @@ DEPEND="${RDEPEND}
 	dev-util/pkgconfig"
 
 src_prepare() {
-	epatch "${FILESDIR}"/${P}-libgen_h.patch
+	#epatch "${FILESDIR}"/${P}-libgen_h.patch
 	sed -i -e 's:-Werror -g::' configure || die
 }
