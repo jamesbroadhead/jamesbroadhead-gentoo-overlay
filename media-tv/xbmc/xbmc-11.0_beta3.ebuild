@@ -14,13 +14,14 @@ else
 		inherit versionator
 		CODENAME="Eden"
 		MY_PV=`get_version_component_range 1-2`-${CODENAME}_`get_version_component_range 3`
+
 		MY_P="${PN}-${MY_PV}"
 	else
 		MY_P=${P/_/-}
 	fi
 	SRC_URI="http://mirrors.xbmc.org/releases/source/${MY_P}.tar.gz"
 	KEYWORDS="~amd64 ~x86"
-	S=${WORKDIR}/${MY_P}
+	S="${WORKDIR}/${MY_P}${EXTRA_PV}"
 fi
 
 DESCRIPTION="XBMC is a free and open source media-player and entertainment hub"
@@ -106,11 +107,17 @@ DEPEND="${COMMON_DEPEND}
 src_unpack() {
 	if [[ ${PV} == "9999" ]] ; then
 		git-2_src_unpack
-		cd "${S}"
+		cd "${S}" || die
 		rm -f configure
 	else
-		unpack ${A}
-		cd "${S}"
+		unpack ${A} || die
+		
+		# TODO: fix this
+		# zipfile: 11.0-Eden_beta3 has folder 11.0-Eden_beta3.1 
+		if ! [ -d ${S} ] && [ -d "${S}.1" ] ; then
+			S="${S}.1"
+		fi
+		cd "${S}" || die
 	fi
 
 	# Fix case sensitivity
