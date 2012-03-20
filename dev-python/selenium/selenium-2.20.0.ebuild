@@ -1,4 +1,4 @@
-# Copyright 1999-2011 Gentoo Foundation
+# Copyright 1999-2012 Gentoo Foundation
 # Distributed under the terms of the GNU General Public License v2
 # $Header: $
 
@@ -19,3 +19,9 @@ IUSE=""
 
 DEPEND="dev-python/setuptools"
 RDEPEND=""
+
+pkg_postinstall() {
+	einfo "To use selenium with www-client/firefox-bin, you must create a "
+	einfo "'firefox' symlink somewhere in your PATH."
+	einfo "	 eg. ln -s /usr/bin/firefox-bin /usr/local/firefox" 
+}
