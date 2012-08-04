@@ -4,11 +4,11 @@
 
 EAPI="2"
 
-inherit subversion
+inherit git
 
 DESCRIPTION="Command-line downloader and uploader for file-sharing websites"
 HOMEPAGE="http://code.google.com/p/plowshare/"
-ESVN_REPO_URI="http://${PN}.googlecode.com/svn/trunk/"
+EGIT_REPO_URI="https://code.google.com/p/${PN}/"
 
 LICENSE="GPL-3"
 SLOT="0"
