@@ -4,7 +4,7 @@
 
 EAPI="2"
 
-inherit git-2
+inherit bash-completion-r1 git-2
 
 DESCRIPTION="Command-line downloader and uploader for file-sharing websites"
 HOMEPAGE="http://code.google.com/p/plowshare/"
@@ -13,7 +13,7 @@ EGIT_REPO_URI="https://code.google.com/p/${PN}/"
 LICENSE="GPL-3"
 SLOT="0"
 KEYWORDS="~amd64 ~arm ~ppc ~x86"
-IUSE="+javascript +perl scripts view-captcha"
+IUSE="bash-completion +javascript +perl scripts view-captcha"
 
 RDEPEND="
 	javascript? ( dev-lang/spidermonkey )
@@ -36,27 +36,35 @@ DEPEND=""
 
 src_prepare() {
 	if ! use javascript; then
-		sed -i -e 's:^\(MODULES=".*\)mediafire:\1:' \
-			-e 's:^\(MODULES=".*\)zshare:\1:' \
-			-e 's:^\(MODULES=\".*\)badongo:\1:' \
-			src/{delete,download,list,upload}.sh || die "sed failed"
-		rm src/modules/{mediafire,zshare,badongo}.sh || die "rm failed"
+		sed -i -e 's:^mediafire.*::' \
+			-e 's:^badongo.*::' \
+			-e 's:^dataport_cz.*::' \
+			-e 's:^1fichier.*::' \
+			-e 's:^turbobit.*::' \
+			src/modules/config || die "sed failed"
+		rm src/modules/{mediafire,badongo,dataport_cz,1fichier,turbobit}.sh || die "rm failed"
 	fi
 	if ! use perl; then
-		sed -i -e 's:^\(MODULES=\".*\)netload_in:\1:' \
-			-e 's:^\(MODULES=\".*\)badongo:\1:' \
-			src/{delete,download,list,upload}.sh || die "sed failed"
+		sed -i -e 's:^netload_in.*::' \
+			-e 's:^badongo.*::' \
+			src/modules/config || die "sed failed"
 		rm src/modules/netload_in.sh || die "rm failed"
 		if use javascript; then
 			rm src/modules/badongo.sh || die "rm failed"
 		fi
 
 		# Don't install perl file helpers.
-		sed -i -e 's:\(.*src/lib.sh\).*:\1:' Makefile || die "sed failed"
+		sed -i -e 's:\(.*src/core.sh\).*:\1:' Makefile || die "sed failed"
 	fi
 
 	# Don't let 'make install' install docs.
 	sed -i -e "/INSTALL.*DOCDIR/d" Makefile || die "sed failed"
+
+	if use bash-completion; then
+		sed -i -e \
+			's:CDIR=/usr/local/share/plowshare/modules/config:CDIR=/usr/share/plowshare/modules/config:' \
+			etc/plowshare.completion || die "sed failed"
+	fi
 }
 
 src_compile() {
@@ -65,32 +73,33 @@ src_compile() {
 }
 
 src_test() {
-	# don't use test_modules.sh because it needs a working internet connection
-	if ! use perl; then
-		sed -i -e "s:\(.*\.pl\):#\1:" test/test_lib.sh || die "sed failed"
-	fi
-	./test/test_lib.sh || die "test failed"
+	# Disable tests because all of them need a working Internet connection.
+	:
 }
 
 src_install() {
 	DESTDIR="${D}" PREFIX="/usr" emake install || die "emake install failed"
 
-	dodoc CHANGELOG README || die "dodoc failed"
+	dodoc AUTHORS CHANGELOG README || die "dodoc failed"
 
 	if use scripts; then
 		exeinto /usr/bin/
 		doexe contrib/{caturl,plowdown_{add_remote_loop,loop,parallel}}.sh \
 			|| die "doins failed"
 	fi
+
+	if use bash-completion; then
+		newbashcomp etc/${PN}.completion ${PN} || die "newbashcomp failed"
+	fi
 }
 
 pkg_postinst() {
 	if ! use javascript; then
 		ewarn "Without javascript you will not be able to use:"
-		ewarn " zshare, mediafire and badongo."
+		ewarn " mediafire, badongo, dataport_cz, 1fichier and turbobit."
 	fi
 	if ! use perl; then
 		ewarn "Without perl you will not be able to use:"
-		ewarn " netload.in and badongo"
+		ewarn " netload.in and badongo."
 	fi
 }
