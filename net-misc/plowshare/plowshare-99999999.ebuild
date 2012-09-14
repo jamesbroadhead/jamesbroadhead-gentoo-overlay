@@ -84,7 +84,7 @@ src_install() {
 
 	if use scripts; then
 		exeinto /usr/bin/
-		doexe contrib/{caturl,plowdown_{add_remote_loop,loop,parallel}}.sh \
+		doexe ${S}/contrib/plowdown_{add_remote_loop,loop,parallel}.sh \
 			|| die "doins failed"
 	fi
 
