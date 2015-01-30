@@ -12,7 +12,7 @@ EGIT_REPO_URI="https://code.google.com/p/${PN}/"
 
 LICENSE="GPL-3"
 SLOT="0"
-KEYWORDS="~amd64 ~arm ~ppc ~x86"
+KEYWORDS=""
 IUSE="bash-completion +javascript scripts view-captcha"
 
 RDEPEND="
@@ -25,17 +25,20 @@ RDEPEND="
 	view-captcha? ( || ( media-gfx/aview media-libs/libcaca ) )"
 DEPEND=""
 
+S=${WORKDIR}/${MY_P}
+
 # NOTES:
 # javascript dep should be any javascript interpreter using /usr/bin/js
 
+# Modules using detect_javascript
+JS_MODULES="letitbit rapidgator zalaa zippyshare"
+
 src_prepare() {
-	# Modules using detect_javascript
 	if ! use javascript; then
-		sed -i -e 's:^rapidgator.*::' \
-			-e 's:^zalaa*::' \
-			-e 's:^zippyshare*::' \
-			src/modules/config || die "sed failed"
-		rm src/modules/{rapidgator,zalaa,zippyshare}.sh || die "rm failed"
+		for module in ${JS_MODULES}; do
+			sed -i -e "s:^${module}.*::" src/modules/config || die "${module} sed failed"
+			rm src/modules/${module}.sh || die "${module} rm failed"
+		done
 	fi
 
 	# Don't let 'make install' install docs.
@@ -65,9 +68,7 @@ src_install() {
 
 	if use scripts; then
 		exeinto /usr/bin/
-		pwd
-		ls contrib
-		doexe contrib/plowdown_{add_remote_loop,loop,parallel}.sh
+		doexe contrib/{plowdown_{add_remote_loop,loop,parallel}}.sh
 	fi
 
 	if use bash-completion; then
@@ -78,6 +79,6 @@ src_install() {
 pkg_postinst() {
 	if ! use javascript; then
 		ewarn "Without javascript you will not be able to use:"
-		ewarn " rapidgator, zalaa, zippyshare"
+		ewarn " ${JS_MODULES}"
 	fi
 }
