@@ -19,7 +19,7 @@ HOMEPAGE="http://www.libimobiledevice.org/"
 
 LICENSE="GPL-2 LGPL-2.1"
 SLOT="0"
-KEYWORDS="amd64 ~ppc64 x86"
+KEYWORDS=""
 IUSE="python static-libs"
 
 RDEPEND=">=app-pda/libplist-9999[python?]
@@ -49,8 +49,8 @@ src_prepare() {
 }
 
 src_configure() {
-	NOCONFIGURE="set" ./autogen.sh 		
-	
+	NOCONFIGURE="set" ./autogen.sh
+
 	# --with-swig is same as --without-swig wrt #361029
 
 	local myconf
