@@ -1,4 +1,4 @@
-# Copyright 1999-2011 Gentoo Foundation
+# Copyright 1999-2016 Gentoo Foundation
 # Distributed under the terms of the GNU General Public License v2
 # $Header: /var/cvsroot/gentoo-x86/net-news/rawdog/rawdog-2.13.ebuild,v 1.9 2011/01/07 00:32:29 ranger Exp $
 
@@ -10,8 +10,7 @@ RESTRICT_PYTHON_ABIS="3.*"
 
 inherit distutils
 
-DESCRIPTION="Download daemon to automatically fetch objects linked to in RSS
-feeds, such as podcasts or torrents"
+DESCRIPTION="Automatically fetches objects from RSS feeds, such as podcasts or torrents"
 HOMEPAGE="http://code.google.com/p/rssdler"
 SRC_URI="http://${PN}.googlecode.com/files/${P}.tar.gz"
 LICENSE="GPL-2"
